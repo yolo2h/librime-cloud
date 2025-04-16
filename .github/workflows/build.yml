@@ -41,7 +41,7 @@ jobs:
     - name: build
       run: make macos
 
-    - name: upload artifacts
+    - name: upload artifacts 3
       uses: actions/upload-artifact@v4
       with:
         path: macos*.tar.gz
