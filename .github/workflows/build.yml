@@ -28,26 +28,8 @@ jobs:
           linux*.tar.gz
           win32*.zip
 
-  build_macos:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-14, macos-13] # arm and x86
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: build
-      run: make macos
-
-    - name: upload artifacts 3
-      uses: actions/upload-artifact@v4
-      with:
-        path: macos*.tar.gz
-
   release:
-    needs: [ build , build_macos ]
+    needs: [ build ]
     runs-on: ubuntu-latest
     steps:
     - name: download artifacts 2
