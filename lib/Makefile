@@ -28,7 +28,7 @@ librime-lua5.4-x64:
 	7z x -olibrime-lua5.4-x64 rime-76a0a16-Windows-msvc-x64.7z
 
 thirdparty:
-	git clone -b thirdparty http://github.com/yolo2h/librime-lua.git thirdparty
+	git clone -b thirdparty http://github.com/hchunhui/librime-lua.git thirdparty
 
 curl-${CURLV}:
 	curl -L -O https://curl.se/download/curl-${CURLV}.tar.gz
