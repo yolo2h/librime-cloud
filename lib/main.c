@@ -175,6 +175,9 @@ static bool request(Context *curl, const Request *req, Reply *reply)
 	curl_(easy_setopt)(ch, CURLOPT_URL, req->url);
 	curl_(easy_setopt)(ch, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_(easy_setopt)(ch, CURLOPT_CUSTOMREQUEST, req->method);
+	#ifndef _WIN32
+	curl_(easy_setopt)(ch, CURLOPT_TCP_KEEPALIVE, 1L);
+	#endif
 	if (req->timeout)
 		curl_(easy_setopt)(ch, CURLOPT_TIMEOUT_MS, req->timeout);
 
