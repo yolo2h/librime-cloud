@@ -22,7 +22,7 @@ jobs:
       run: docker run -v $PWD:/work --rm build bash -c "cd /work && make"
 
     - name: upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: |
           linux*.tar.gz
@@ -42,7 +42,7 @@ jobs:
       run: make macos
 
     - name: upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: macos*.tar.gz
 
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: download artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         path: .
 
