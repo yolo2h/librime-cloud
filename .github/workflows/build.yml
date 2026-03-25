@@ -2,7 +2,10 @@ name: build
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - "master"
+      - "copilot/**"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -30,6 +33,7 @@ jobs:
 
   release:
     needs: [ build ]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
     - name: download artifacts 2
