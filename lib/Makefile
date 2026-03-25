@@ -4,8 +4,10 @@ CC_mingw64 = x86_64-w64-mingw32-gcc
 
 LUAV ?= 5.5
 LUAINC = thirdparty/lua${LUAV}
-LUASRC = https://raw.githubusercontent.com/Mhatxotic/Lua/${LUAV}/src
 LUAHEADERS = lauxlib.h lua.h lua.hpp luaconf.h lualib.h
+LUAARCHIVE = lua-${LUAV}.0.tar.gz
+LUAURL = https://www.lua.org/ftp/${LUAARCHIVE}
+LUAMIRROR = https://github.com/Mhatxotic/Lua/archive/refs/tags/${LUAV}.tar.gz
 LUALIB = -Llibrime-lua${LUAV}/dist/lib -lrime
 LUALIB64 = -Llibrime-lua${LUAV}-x64/dist/lib -lrime
 
@@ -33,9 +35,15 @@ librime-lua${LUAV}-x64:
 	7z x -olibrime-lua${LUAV}-x64 rime-${RIMEASSET}-Windows-msvc-x64.7z
 
 ${LUAINC}/lua.h:
-	mkdir -p ${LUAINC}
+	tmpdir=$$(mktemp -d) && \
+	if ! curl -L -o $$tmpdir/${LUAARCHIVE} ${LUAURL}; then \
+		curl -L -o $$tmpdir/${LUAARCHIVE} ${LUAMIRROR}; \
+	fi && \
+	tar xzf $$tmpdir/${LUAARCHIVE} -C $$tmpdir && \
+	srcdir=$$(find $$tmpdir -path '*/src/lua.h' -printf '%h\n' -quit) && \
+	mkdir -p ${LUAINC} && \
 	for f in ${LUAHEADERS}; do \
-		curl -L -o ${LUAINC}/$$f ${LUASRC}/$$f; \
+		cp $$srcdir/$$f ${LUAINC}/$$f; \
 	done
 
 curl-${CURLV}:
