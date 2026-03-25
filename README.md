@@ -9,6 +9,7 @@
   您也可以从 https://github.com/hchunhui/librime-cloud 获取编译脚本，从源码编译。
 
 ## 安装
+  当前默认 Lua 版本为 5.5。
   1. 编译或获取压缩包
   2. 解压
      - Windows 平台（小狼毫 >= 0.14.0）
