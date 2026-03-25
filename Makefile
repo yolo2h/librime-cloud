@@ -17,4 +17,4 @@ macos:
 	tar czvf macos-`uname -m`-lua5.5.tar.gz out-macos scripts README.md
 
 clean:
-	rm -rf out-mingw out-linux out-macos linux-*.tar.gz win32-*.zipa macos-*.tar.gz
+	rm -rf out-mingw out-linux out-macos linux-*.tar.gz win32-*.zip macos-*.tar.gz
