@@ -2,7 +2,7 @@ all: linux win32
 
 linux:
 	cd lib && make clean simplehttp.so
-	rm -rf out-linux && mkdir out-linux && cp lib/simplehttp.so out-linux
+	rm -rf out-linux && mkdir out-linux && cp lib/simplehttp.so lib/liblua5.5.so out-linux
 	tar czvf linux-`uname -m`-lua5.5.tar.gz out-linux scripts README.md
 
 win32:
