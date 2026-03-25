@@ -8,8 +8,6 @@ LUAHEADERS = lauxlib.h lua.h lua.hpp luaconf.h lualib.h
 LUAARCHIVE = lua-${LUAV}.0.tar.gz
 LUAURL = https://www.lua.org/ftp/${LUAARCHIVE}
 LUAMIRROR = https://github.com/Mhatxotic/Lua/archive/refs/tags/${LUAV}.tar.gz
-LUASRC = thirdparty/lua-src-${LUAV}
-LUA_SO = liblua${LUAV}.so
 LUALIB = -Llibrime-lua${LUAV}/dist/lib -lrime
 LUALIB64 = -Llibrime-lua${LUAV}-x64/dist/lib -lrime
 
@@ -25,12 +23,9 @@ PLAT ?= linux
 LDFLAGS_linux = -Wl,--gc-sections -Wl,-s
 LDFLAGS_macos = -Wl,-bundle -Wl,-undefined,dynamic_lookup
 LDFLAGS = ${LDFLAGS_${PLAT}}
-LUADEP_linux = ${LUA_SO}
-LUADEP_macos =
-LUADEP = ${LUADEP_${PLAT}}
-LUALINK_linux = -Wl,-rpath,'$$ORIGIN' -L. -l:${LUA_SO}
-LUALINK_macos =
-LUALINK = ${LUALINK_${PLAT}}
+LDLIBS_linux = -llua
+LDLIBS_macos =
+LDLIBS = ${LDLIBS_${PLAT}}
 
 all: simplehttp.so simplehttp.dll simplehttpx64.dll
 
@@ -42,19 +37,13 @@ librime-lua${LUAV}-x64:
 	curl -L -O https://github.com/rime/librime/releases/download/${RIMEV}/rime-${RIMEASSET}-Windows-msvc-x64.7z
 	7z x -olibrime-lua${LUAV}-x64 rime-${RIMEASSET}-Windows-msvc-x64.7z
 
-${LUASRC}/src/lua.h:
+${LUAINC}/lua.h:
 	tmpdir=$$(mktemp -d) && \
 	if ! curl -L -o $$tmpdir/${LUAARCHIVE} ${LUAURL}; then \
 		curl -L -o $$tmpdir/${LUAARCHIVE} ${LUAMIRROR}; \
 	fi && \
 	tar xzf $$tmpdir/${LUAARCHIVE} -C $$tmpdir && \
 	srcdir=$$(find $$tmpdir -path '*/src/lua.h' -printf '%h\n' -quit) && \
-	rm -rf ${LUASRC} && \
-	mkdir -p $$(dirname ${LUASRC}) && \
-	cp -a $$(dirname $$srcdir) ${LUASRC}
-
-${LUAINC}/lua.h: ${LUASRC}/src/lua.h
-	srcdir=${LUASRC}/src && \
 	mkdir -p ${LUAINC} && \
 	for f in ${LUAHEADERS}; do \
 		cp $$srcdir/$$f ${LUAINC}/$$f; \
@@ -72,13 +61,8 @@ curl-${CURLV}/build32/lib/.libs:
 curl-${CURLV}/build64/lib/.libs:
 	cd curl-${CURLV} && sh ../tinycurlx64.sh
 
-${LUA_SO}: ${LUASRC}/src/lua.h
-	${CC} -I${LUASRC}/src -Os -fPIC -shared ${LDFLAGS_linux} -Wl,-soname,${LUA_SO} -o $@ \
-		$$(find ${LUASRC}/src -maxdepth 1 -name '*.c' ! -name 'lua.c' ! -name 'luac.c' | sort) \
-		-lm -ldl
-
-simplehttp.so: main.c ${LUAINC}/lua.h curl-${CURLV} ${LUADEP}
-	${CC} -I${LUAINC} -I${CURLINC} -Os -fPIC -shared ${LDFLAGS} -o $@ $< ${LUALINK}
+simplehttp.so: main.c ${LUAINC}/lua.h curl-${CURLV}
+	${CC} -I${LUAINC} -I${CURLINC} -Os -fPIC -shared ${LDFLAGS} -o $@ $< ${LDLIBS}
 
 simplehttp.dll: main.c librime-lua${LUAV} ${LUAINC}/lua.h curl-${CURLV}/build32/lib/.libs
 	${CC_mingw} -I${LUAINC} -I${CURLINC} -Os -shared -o $@ $< -Wl,--gc-sections -Wl,-s -static-libgcc ${LUALIB} ${CURLLIB}
@@ -87,4 +71,4 @@ simplehttpx64.dll: main.c librime-lua${LUAV}-x64 ${LUAINC}/lua.h curl-${CURLV}/b
 	${CC_mingw64} -I${LUAINC} -I${CURLINC} -Os -shared -o $@ $< -Wl,--gc-sections -Wl,-s -static-libgcc ${LUALIB64} ${CURLLIB64}
 
 clean:
-	rm -f simplehttp.so simplehttp.dll simplehttpx64.dll ${LUA_SO}
+	rm -f simplehttp.so simplehttp.dll simplehttpx64.dll
